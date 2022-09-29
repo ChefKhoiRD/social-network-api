@@ -24,11 +24,9 @@ const reactionSchema = new Schema(
     {
         toJSON: {
             getters: true
-        }
+        },
+        id: false
     }
 );
 
-
-const reaction = model('reaction', reactionSchema);
-
-module.exports = reaction;
+module.exports = reactionSchema;

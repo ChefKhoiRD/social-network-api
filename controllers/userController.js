@@ -1,26 +1,24 @@
-const { Users } = require('../models/user');
+const { Users } = require('../models');
 
 module.exports = {
-    
+
     // Get all users
     getAllUsers(req, res) {
         Users.find()
-        .then((users) => res.json(users))
-        .catch((err) => res.json(err))
+        .then((user) => res.json(user))
+        .catch((err) => res.status(500).json(err))
     },
 
     // Get one user
     getOneUser(req, res) {
-        Users.findOne({ _id: req.params.id })
+        Users.findOne({ _id: req.params.userId })
         .populate({ path: 'thoughts', select: '-__v' })
         .populate({ path: 'friends', select: '-__v' })
         .select('-__v')
-        .then(user => {
-            if (!user) {
-                res.json("No user associated with this id")
-            } else {
-               res.json(user) 
-            }
+        .then(async (user) => {
+                !user
+                    ? res.json("No user associated with this id")
+                    : res.json(user)
         })
         .catch((err) => res.status(500).json(err))
     },
@@ -38,7 +36,7 @@ module.exports = {
     // Update user
     updateUser(req, res) {
         Users.findOneAndUpdate(
-            { _id: req.params.id },
+            { _id: req.params.userId },
             { $set: req.body },
             { new: true, runValidators: true }
         )
@@ -54,7 +52,7 @@ module.exports = {
 
     // Delete User
     deleteUser(req, res) {
-        Users.findOneAndDelete({ _id: req.params.id })
+        Users.findOneAndDelete({ _id: req.params.userId })
             .then((user) => {
                 if (!user) {
                     res.json("No user associated with this id")
@@ -63,39 +61,5 @@ module.exports = {
                 }
             })
             .catch((err) => res.status(500).json(err))
-    },
-
-    // Add friend to user data
-    addFriend(req, res) {
-        Users.findOneAndUpdate(
-            { _id: req.params.id },
-            { $push: {friends: req.params.friendId} },
-            { new: true, runValidators: true }
-        )
-        .then((user) => {
-            if (!user) {
-                res.json("No user associated with this id")
-            } else {
-               res.json(user) 
-            }
-        })
-        .catch((err) => res.status(500).json(err))
-    },
-
-    // Delete friend from user data
-    deleteFriend(req, res) {
-        Users.findOneAndUpdate(
-            { _id: req.params.id },
-            { $pull: {friends: req.params.friendId} },
-            { new: true, runValidators: true }
-        )
-        .then((user) => {
-            if (!user) {
-                res.json("No user associated with this id")
-            } else {
-               res.json(user) 
-            }
-        })
-        .catch((err) => res.status(500).json(err))
     }
 }

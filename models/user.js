@@ -3,12 +3,6 @@ const { Schema, model } = require('mongoose');
 // Schema to create user model
 const userSchema = new Schema(
   {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
-    },
     username: {
       type: String,
       unique: true,
@@ -23,20 +17,16 @@ const userSchema = new Schema(
     thoughts: {
         type: Schema.Types.ObjectId,
         ref: 'Thought'
-    },
-    friends: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    
+    }
   },
   {
     toJSON: {
       getters: true,
     },
+    id: false,
   }
 );
 
-const user = model('user', userSchema);
+const User = model('user', userSchema);
 
-module.exports = user;
+module.exports = User;
